@@ -1,0 +1,93 @@
+﻿MyBettingEdge/
+│
+├── **📁 Core/**
+│   ├── Domain/
+│   │   ├── Bet.cs                # Apuesta realizada (monto, odds, estado)
+│   │   ├── BetRecommendation.cs  # Recomendación generada por el sistema
+│   │   ├── Match.cs              # Datos del partido + odds históricas
+│   │   ├── MatchAnalysis.cs      # Análisis estadístico completo del partido
+│   │   ├── TeamStats.cs          # Estadísticas históricas del equipo
+│   │   └── LiveOddsUpdate.cs     # Actualización en tiempo real de cuotas
+│   │
+│   ├── Enums/
+│   │   ├── BetType.cs            # Tipos de apuesta (1X2, Over/Under...)
+│   │   ├── League.cs             # Ligas soportadas (Premier, LaLiga...)
+│   │   └── ChampionsLeagueStage.cs # Fases de Champions
+│   │
+│   └── Services/
+│       ├── BankrollService.cs    # Gestión de dinero (algoritmo Kelly)
+│       ├── EdgeCalculator.cs     # Cálculo de edge sobre la casa
+│       ├── BettingValidator.cs   # Validación de apuestas emocionales/riesgo
+│       └── NotificationService.cs# Alertas por Telegram/Email
+│
+├── **📁 Data/**
+│   ├── External/
+│   │   ├── BetfairClient.cs      # Conexión a API Betfair
+│   │   ├── ApiFootballClient.cs  # Obtiene stats de partidos
+│   │   └── DTOs/                 # Objetos de transferencia de APIs externas
+│   │       ├── MatchOdds.cs
+│   │       ├── InjuryReport.cs
+│   │       └── LiveMatch.cs
+│   │
+│   ├── Database/
+│   │   ├── DbContext.cs          # Entity Framework Core
+│   │   └── Migrations/           # Scripts de migración
+│   │
+│   └── Cache/
+│       └── RedisCache.cs         # Almacenamiento temporal de odds
+│
+├── **📁 Models/**
+│   ├── PredictiveModels/
+│   │   ├── PoissonModel.cs       # Distribución de Poisson para goles
+│   │   ├── EloRatingModel.cs     # Modelo de rating Elo dinámico
+│   │   ├── XGBoostModel.cs       # Modelo ML para predicciones complejas
+│   │   └── HybridModel.cs        # Combinación de modelos
+│   │
+│   ├── DataModels/
+│   │   ├── TrainingData.cs       # Datos para entrenar modelos
+│   │   ├── PredictionInput.cs    # Input para modelos predictivos
+│   │   └── PredictionOutput.cs   # Resultados de las predicciones
+│   │
+│   └── Utilities/
+│       ├── FeatureBuilder.cs     # Ingeniería de características para ML
+│       └── ModelEvaluator.cs     # Métricas de rendimiento (ROI, precisión)
+│
+├── **📁 Strategies/**
+│   ├── ValueBet/
+│   │   ├── ValueBetStrategy.cs   # Estrategia principal de value betting
+│   │   ├── EdgeCalculator.cs     # Cálculo específico de valor
+│   │   └── MarketFilters.cs      # Filtra mercados por liquidez
+│   │
+│   ├── LiveTrading/
+│   │   ├── LiveTradingEngine.cs  # Motor de trading en tiempo real
+│   │   ├── HedgingService.cs     # Cobertura de apuestas
+│   │   └── OddsMovementAnalyzer.cs # Detecta tendencias
+│   │
+│   ├── Arbitrage/
+│   │   ├── ArbitrageScanner.cs   # Busca oportunidades de surebets
+│   │   └── StakeCalculator.cs    # Calcula stakes óptimos
+│   │
+│   └── Tournament/
+│       ├── ChampionsLeagueStrategy.cs # Lógica específica para UCL
+│       └── DerbyStrategy.cs       # Estrategias para partidos clásicos
+│
+├── **📁 Infrastructure/**
+│   ├── Security/
+│   │   ├── JwtService.cs         # Autenticación JWT
+│   │   └── DataProtector.cs      # Cifrado AES-256
+│   │
+│   ├── Logging/
+│   │   ├── ActivityLogger.cs     # Registro detallado de apuestas
+│   │   └── ErrorHandler.cs       # Manejo centralizado de errores
+│   │
+│   └── Config/
+│       ├── AppConfig.cs          # Configuración global
+│       └── SecretsManager.cs     # Manejo de claves API
+│
+├── **📁 UI/**
+│   ├── ConsoleInterface/         # CLI para operaciones rápidas
+│   └── WebDashboard/             # Panel de control con Blazor/React
+│
+└── **📁 Testing/**
+    ├── UnitTests/                # Pruebas de modelos y servicios
+    └── Backtesting/              # Validación histórica de estrategias
