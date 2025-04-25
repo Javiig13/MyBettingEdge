@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Core.Domain;
+﻿using Core.Domain;
+using Data.Database.Configurations;
+using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 
 namespace Data.Database
