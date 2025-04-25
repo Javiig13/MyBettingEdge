@@ -1,36 +1,51 @@
-﻿using Models.DataModels;
+﻿using Core.Domain;
+using Models.DataModels;
+using Models.Ensemble;
 
 namespace Models.PredictiveModels
 {
     public class HybridModel
     {
-        private readonly PoissonModel _poisson;
-        private readonly EloRatingModel _elo;
+        private readonly PoissonModel _poisson = new();
+        private readonly EloRatingModel _elo = new();
+        private readonly XGBoostModel _xgboost;
 
-        public HybridModel()
+        public HybridModel(string? xgboostModelPath = null)
         {
-            _poisson = new PoissonModel();
-            _elo = new EloRatingModel();
+            _xgboost = xgboostModelPath is not null
+                ? new XGBoostModel(xgboostModelPath)
+                : new XGBoostModel(); // Dummy mode
         }
 
-        public PredictionOutput Predict(MatchInput input)
+        public async Task<List<ModelPrediction>> PredictAllAsync(Match match, MatchInput input)
         {
-            var poissonProbs = _poisson.CalculateProbabilities(input.HomeStats, input.AwayStats);
-            var eloProbs = EloRatingModel.CalculateProbabilities(input.HomeStats, input.AwayStats);
+            var predictions = new List<ModelPrediction>();
 
-            return new PredictionOutput
+            // Poisson
+            var poissonProbs = _poisson.CalculateProbabilities(input.HomeStats, input.AwayStats);
+            predictions.Add(new ModelPrediction
             {
-                HomeWinProbability = (poissonProbs.HomeWin * 0.4m) + (eloProbs.HomeWin * 0.6m),
-                DrawProbability = (poissonProbs.Draw * 0.3m) + (eloProbs.Draw * 0.7m),
-                AwayWinProbability = (poissonProbs.AwayWin * 0.4m) + (eloProbs.AwayWin * 0.6m),
-                Over2_5Probability = (poissonProbs.Over2_5 * 0.5m) + (eloProbs.Over2_5 * 0.5m),
-                Under2_5Probability = (poissonProbs.Under2_5 * 0.5m) + (eloProbs.Under2_5 * 0.5m),
-                BTTSProbability = (poissonProbs.BTTS * 0.5m) + (eloProbs.BTTS * 0.5m),
-                BTTS_NoProbability = (poissonProbs.BTTS_No * 0.5m) + (eloProbs.BTTS_No * 0.5m),
-                ExpectedGoals = (poissonProbs.ExpectedGoals * 0.5m) + (eloProbs.ExpectedGoals * 0.5m),
-                ExpectedCorners = (poissonProbs.ExpectedCorners * 0.5m) + (eloProbs.ExpectedCorners * 0.5m),
-                ExpectedCards = (poissonProbs.ExpectedCards * 0.5m) + (eloProbs.ExpectedCards * 0.5m)
-            };
+                ModelName = "Poisson",
+                Probabilities = poissonProbs
+            });
+
+            // Elo
+            var eloProbs = _elo.CalculateProbabilities(input.HomeStats, input.AwayStats);
+            predictions.Add(new ModelPrediction
+            {
+                ModelName = "Elo",
+                Probabilities = eloProbs
+            });
+
+            // XGBoost
+            var xgbProbs = await _xgboost.PredictAsync(match, input.HomeStats, input.AwayStats);
+            predictions.Add(new ModelPrediction
+            {
+                ModelName = "XGBoost",
+                Probabilities = xgbProbs
+            });
+
+            return predictions;
         }
     }
 }

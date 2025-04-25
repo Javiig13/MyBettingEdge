@@ -9,7 +9,7 @@ namespace Models.PredictiveModels
         private const decimal BaseUnderProbability = 0.35m;
         private const decimal LineDefault = 2.5m;
 
-        public static PredictionProbabilities CalculateProbabilities(TeamStats homeStats, TeamStats awayStats)
+        public PredictionProbabilities CalculateProbabilities(TeamStats homeStats, TeamStats awayStats)
         {
             decimal eloDiff = (decimal)awayStats.CurrentEloRating - (decimal)homeStats.CurrentEloRating + 100m;
             decimal homeWinProb = 1m / (1m + (decimal)Math.Pow(10, (double)(eloDiff / 400m)));

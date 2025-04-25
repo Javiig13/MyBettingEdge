@@ -209,16 +209,12 @@ namespace Data.External
     }
 
     // Excepciones personalizadas
-    public class BetfairAuthException : Exception
+    public class BetfairAuthException(string message, Exception inner = null) : Exception(message, inner)
     {
-        public BetfairAuthException(string message, Exception inner = null)
-            : base(message, inner) { }
     }
 
-    public class BetfairApiException : Exception
+    public class BetfairApiException(string message, Exception inner = null) : Exception(message, inner)
     {
-        public BetfairApiException(string message, Exception inner = null)
-            : base(message, inner) { }
     }
 
     // Conversor personalizado para BetType

@@ -3,9 +3,9 @@ using StackExchange.Redis;
 
 namespace Data.Cache
 {
-    public static class RedisConnectionFactory
+    public class RedisConnectionFactory
     {
-        public static ConnectionMultiplexer Create(IConfiguration config)
+        public ConnectionMultiplexer Create(IConfiguration config)
             => ConnectionMultiplexer.Connect(new ConfigurationOptions
             {
                 EndPoints = { config["ConnectionStrings:Redis"] },

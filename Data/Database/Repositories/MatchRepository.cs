@@ -1,31 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Core.Domain;
+﻿using Core.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Database.Repositories
 {
     public class MatchRepository(AppDbContext context) : IMatchRepository
     {
-        public async Task<Match> GetByIdAsync(string matchId)
-            => await context.Matches
-                .Include(m => m.HomeTeamStats)
-                .Include(m => m.AwayTeamStats)
-                .FirstOrDefaultAsync(m => m.MatchId == matchId);
+        private readonly AppDbContext _context = context;
 
-        public async Task AddAsync(Match match)
+        public async Task<List<Match>> GetUpcomingMatchesAsync(DateTime fromDate)
         {
-            await context.Matches.AddAsync(match);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(Match match)
-        {
-            context.Matches.Update(match);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<Match>> GetLiveMatchesAsync()
-            => await context.Matches
-                .Where(m => m.Status == MatchStatus.InPlay)
+            return await _context.Matches
+                .Where(m => m.StartTime >= fromDate)
                 .ToListAsync();
+        }
+
+        public async Task<Match?> GetMatchByIdAsync(string matchId)
+        {
+            return await _context.Matches.FindAsync(matchId);
+        }
     }
 }

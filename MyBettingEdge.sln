@@ -5,11 +5,6 @@ VisualStudioVersion = 17.12.35521.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBettingEdge", "MyBettingEdge.csproj", "{E2EB1D78-58F9-4B06-9DCA-15D41EAB3419}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{D7DB9879-0781-429C-BE35-A9CB373D9B70}"
-	ProjectSection(SolutionItems) = preProject
-		diagram.txt = diagram.txt
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
