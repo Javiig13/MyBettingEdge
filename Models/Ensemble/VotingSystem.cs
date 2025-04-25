@@ -76,17 +76,24 @@ namespace Models.Ensemble
             Dictionary<string, decimal> modelWeights,
             Dictionary<BetType, decimal> bookmakerOdds)
         {
+            var stake = 1m; // Asumimos stake fijo (puedes parametrizar si lo deseas), reemplazar con una estrategia de staking
+            var odds = bookmakerOdds[bestBet.Key];
+            var edge = totalProbability * odds - 1m;
+            var confidence = totalProbability;
+
             var recommendation = BetRecommendation.CreateSimple(
                 matchId: matchId,
                 betType: bestBet.Key,
-                odds: bookmakerOdds[bestBet.Key],
+                odds: odds,
                 probability: totalProbability,
-                models: predictions
-                    .OrderByDescending(p => modelWeights[p.ModelName])
-                    .Select(p => p.ModelName)
+                models: predictions.Select(p => p.ModelName),
+                confidence: totalProbability,
+                stake: stake,
+                edge: totalProbability * odds - 1m
             );
 
-            recommendation.CalculateEdge(1m / bookmakerOdds[bestBet.Key]);
+            recommendation.CalculateEdge(1m / odds);
+
             return recommendation;
         }
     }

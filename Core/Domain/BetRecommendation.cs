@@ -14,9 +14,9 @@ namespace Core.Domain
         public decimal CalculatedProbability { get; init; }
         public decimal EdgePercentage { get; set; } // Ventaja sobre la casa
         public decimal Confidence { get; init; } // Nueva propiedad
-
+        public decimal Stake { get; init; }
         // Detalles de modelos
-        public List<string> SupportingModels { get; } = []; // Ej: ["XGBoost", "Poisson"]
+        public List<string> SupportingModels { get; private set; } = []; // Ej: ["XGBoost", "Poisson"]
         public DateTime GeneratedAt { get; } = DateTime.UtcNow;
 
         // Métodos
@@ -39,7 +39,9 @@ namespace Core.Domain
             decimal odds,
             decimal probability,
             IEnumerable<string> models,
-            decimal confidence)
+            decimal confidence,
+            decimal stake,
+            decimal edge)
         {
             return new BetRecommendation
             {
@@ -47,13 +49,16 @@ namespace Core.Domain
                 BetType = betType,
                 Odds = odds,
                 CalculatedProbability = probability,
-                Confidence = confidence
-            }.WithModels(models);
+                Confidence = confidence,
+                Stake = stake,
+                EdgePercentage = edge,
+                SupportingModels = models.ToList()
+            };
         }
 
-        private BetRecommendation WithModels(IEnumerable<string> models)
+        public BetRecommendation WithModels(IEnumerable<string> models)
         {
-            SupportingModels.AddRange(models);
+            SupportingModels = models.ToList();
             return this;
         }
     }

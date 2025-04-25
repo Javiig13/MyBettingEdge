@@ -2,79 +2,59 @@
 
 namespace Core.Domain
 {
-    /// <summary>
-    /// Estadísticas completas de un equipo para múltiples contextos (Domain + ML)
-    /// </summary>
     public class TeamStats
     {
-        // Identificación básica
         public required string TeamId { get; init; }
         public required string TeamName { get; init; }
         public required League MainLeague { get; init; }
 
-        // Rendimiento reciente (máximo 10 partidos)
-        private readonly Queue<MatchPerformance> _lastPerformances = new(10);
-        public IReadOnlyCollection<MatchPerformance> LastPerformances => _lastPerformances;
-
-        // Métricas principales (promedios móviles)
-        public double MovingAvg_GoalsScored { get; private set; }
-        public double MovingAvg_GoalsConceded { get; private set; }
-        public double MovingAvg_xG { get; private set; }
-        public double MovingAvg_xGA { get; private set; }
-
-        // Métricas adicionales para modelos ML
         public double CurrentEloRating { get; set; }
+
+        private const int MaxRecentMatches = 10;
+        public Queue<MatchPerformance> RecentPerformances { get; } = new(MaxRecentMatches);
+
+        // Promedios móviles
+        public double AvgGoalsScored { get; private set; }
+        public double AvgGoalsConceded { get; private set; }
+        public double AvgxG { get; private set; }
+        public double AvgxGA { get; private set; }
         public double AvgCornersFor { get; private set; }
         public double AvgCornersAgainst { get; private set; }
         public double AvgCardsFor { get; private set; }
         public double AvgCardsAgainst { get; private set; }
 
-        // Método único de actualización
         public void UpdateStats(MatchPerformance performance)
         {
-            // Mantener máximo 10 partidos
-            if (_lastPerformances.Count == 10)
-                _lastPerformances.Dequeue();
+            if (RecentPerformances.Count == MaxRecentMatches)
+                RecentPerformances.Dequeue();
 
-            _lastPerformances.Enqueue(performance);
-
-            // Actualizar todos los promedios
-            UpdateMovingAverages();
-            UpdateAdditionalMetrics();
+            RecentPerformances.Enqueue(performance);
+            RecalculateAverages();
         }
 
-        private void UpdateMovingAverages()
+        private void RecalculateAverages()
         {
-            MovingAvg_GoalsScored = _lastPerformances.Average(p => p.GoalsScored);
-            MovingAvg_GoalsConceded = _lastPerformances.Average(p => p.GoalsConceded);
-            MovingAvg_xG = _lastPerformances.Average(p => p.ExpectedGoals);
-            MovingAvg_xGA = _lastPerformances.Average(p => p.ExpectedGoalsAgainst);
+            AvgGoalsScored = RecentPerformances.Average(p => p.GoalsScored);
+            AvgGoalsConceded = RecentPerformances.Average(p => p.GoalsConceded);
+            AvgxG = RecentPerformances.Average(p => p.ExpectedGoals);
+            AvgxGA = RecentPerformances.Average(p => p.ExpectedGoalsAgainst);
+            AvgCornersFor = RecentPerformances.Average(p => p.CornersFor);
+            AvgCornersAgainst = RecentPerformances.Average(p => p.CornersAgainst);
+            AvgCardsFor = RecentPerformances.Average(p => p.CardsFor);
+            AvgCardsAgainst = RecentPerformances.Average(p => p.CardsAgainst);
         }
 
-        private void UpdateAdditionalMetrics()
-        {
-            AvgCornersFor = _lastPerformances.Average(p => p.CornersFor);
-            AvgCornersAgainst = _lastPerformances.Average(p => p.CornersAgainst);
-            AvgCardsFor = _lastPerformances.Average(p => p.YellowCards + p.RedCards);
-            AvgCardsAgainst = _lastPerformances.Average(p => p.OpponentCards);
-        }
-
-        // Factory Method mejorado
-        public static TeamStats Create(string teamId, string teamName, League league, double initialElo = 1500)
+        public static TeamStats Create(string teamId, string teamName, League league)
         {
             return new TeamStats
             {
                 TeamId = teamId,
                 TeamName = teamName,
-                MainLeague = league,
-                CurrentEloRating = initialElo
+                MainLeague = league
             };
         }
     }
 
-    /// <summary>
-    /// Rendimiento detallado en un partido (ampliado para ML)
-    /// </summary>
     public record MatchPerformance(
         string MatchId,
         int GoalsScored,
@@ -83,9 +63,8 @@ namespace Core.Domain
         double ExpectedGoalsAgainst,
         int CornersFor,
         int CornersAgainst,
-        int YellowCards,
-        int RedCards,
-        int OpponentCards,
+        int CardsFor,
+        int CardsAgainst,
         bool IsHomeGame
     );
 }

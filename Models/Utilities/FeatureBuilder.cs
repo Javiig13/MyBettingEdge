@@ -11,8 +11,8 @@ namespace Models.Utilities
             {
                 HomeElo = (float)homeStats.CurrentEloRating,
                 AwayElo = (float)awayStats.CurrentEloRating,
-                HomeFormLast5 = CalculateForm(homeStats.RecentMatches),
-                AwayFormLast5 = CalculateForm(awayStats.RecentMatches),
+                HomeFormLast5 = CalculateForm(homeStats.RecentPerformances),
+                AwayFormLast5 = CalculateForm(awayStats.RecentPerformances),
                 HomeAvgGoalsScored = (float)homeStats.AvgGoalsScored,
                 AwayAvgGoalsScored = (float)awayStats.AvgGoalsScored,
                 HomeAvgGoalsConceded = (float)homeStats.AvgGoalsConceded,
